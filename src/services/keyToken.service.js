@@ -48,5 +48,34 @@ class KeyTokenService {
             .findOne({ user: new Types.ObjectId(userId) })
             .lean();
     };
+    // check tokend Userd
+    static finfByRefreshTokenUsed = async (refreshToken) => {
+        return await keytokenModel
+            .findOne({ refreshTokenUsed: refreshToken })
+            .lean();
+    };
+    // detele Key
+    static deleteKeyById = async (userId) => {
+        return await keytokenModel
+            .deleteOne({ user: new Types.ObjectId(userId) })
+            .lean();
+    };
+    //find by refreshtoken
+    static findByRefreshToken = async (refreshToken) => {
+        return await keytokenModel
+            .findOne({ refreshToken: refreshToken })
+            .lean();
+    };
+    // find and update
+    static findAndUpdate = async (tokens, refreshToken) => {
+        return await keytokenModel.findOneAndUpdate(
+            { refreshToken: refreshToken },
+            {
+                $set: { refreshToken: tokens.refreshToken },
+                $addToSet: { refreshTokenUsed: refreshToken },
+            },
+            { new: true } // Trả về bản ghi đã được cập nhật
+        );
+    };
 }
 module.exports = KeyTokenService;

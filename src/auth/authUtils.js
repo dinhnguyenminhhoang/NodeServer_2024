@@ -9,6 +9,7 @@ const HEADER = {
     CLIENT_ID: "x-client-id",
     AUTHORIZATION: "authorization",
 };
+
 const createTokenPair = async (payload, publicKey, privateKey) => {
     try {
         const accessToken = await JWT.sign(payload, publicKey, {
@@ -52,7 +53,11 @@ const authentication = asynchandler(async (req, res, next) => {
         throw error;
     }
 });
+const verifyJWT = async (token, keySecret) => {
+    return await JWT.verify(token, keySecret);
+};
 module.exports = {
     createTokenPair,
     authentication,
+    verifyJWT,
 };
