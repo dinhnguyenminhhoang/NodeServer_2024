@@ -1,0 +1,2 @@
+connect LV0 : thiết lập 1 kết nối mới tới csdl nếu req 1 modal khác nhưng không phải trên môi trường node => nhiều kết nối được tạo ra dẩn đến quá tải server (vấn đền này ko xuất hiện trong nodeJs nhưng lại xuất hiện ở các ngôn ngữ BE khác VS java)
+conenct lv XX : dùng design pattern singleton để chỉ có 1 kết nối

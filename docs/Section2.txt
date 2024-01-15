@@ -1,0 +1,9 @@
+NodeJs
+- morgan : cho phép server log ra các trạng thái 
+ + dev : inra màu tương ứng vs status
+ + combined : in ra đầy đủ theo tiêu chuẩn apache gồm IP người res, time,res,http,curl(gg chormwe,..) ( sử dụng khi dùng server thật)
+ + common : như combined nhưng không có curl
+ + short : thông báo ngắn hơn gồm thời gina phản hồi và phương thức,http
+ +tiny  : chỉ có phương thức không có http
+- helmet : ẩn đi công nghệ sử dụng chống hacker/ ngăn chặn bên thứ 3 truy cập vào
+- compression : khi gửi dữ liệu sẽ tốn băng thông của người dùng và chúng ta -> giúp giảm size khi gửi dữ liệu

@@ -1,0 +1,6 @@
+loginApi
+    step 1 - check email in dbs
+    step 2 - match password
+    step 3 - create At vs RT and save
+    step 4 - generate tokens
+    step 5 - get data return login
