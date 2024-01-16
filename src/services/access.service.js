@@ -184,5 +184,36 @@ class AccessService {
         };
     };
     // end handler refresh token
+    // handle refreshToken V2
+    static handleRefreshTokenV2 = async ({ refreshToken, user, keyStore }) => {
+        const { userId, email } = user;
+        if (keyStore.refreshTokenUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteKeyById(userId);
+            throw new ForbiddenError("somthing wrong heppend ");
+        }
+        if (keyStore.refreshToken != refreshToken) {
+            throw new AuthFailureError("shop not registered");
+        }
+        const foundShop = await findByEmail({ email });
+        if (!foundShop) throw new AuthFailureError("shop not registered");
+        // create new token
+        const tokens = await createTokenPair(
+            {
+                userId: userId,
+                email: email,
+            },
+            keyStore.publicKey,
+            keyStore.privateKey
+        );
+        //update token
+        const updatedHolderToken = await KeyTokenService.findAndUpdate(
+            tokens,
+            refreshToken
+        );
+        return {
+            user: { userId, email },
+            tokens,
+        };
+    };
 }
 module.exports = AccessService;
