@@ -47,7 +47,6 @@ class AccessService {
             // áp dụng cho các hệ thông  nhỏ
             const publicKey = crypto.randomBytes(64).toString(`hex`);
             const privateKey = crypto.randomBytes(64).toString(`hex`);
-            console.log({ privateKey, publicKey });
             const keyStore = await KeyTokenService.createKeyToken({
                 userId: newSHop._id,
                 publicKey: publicKey,
@@ -69,7 +68,6 @@ class AccessService {
                 publicKey,
                 privateKey
             );
-            console.log(`created token successfully::`, tokens);
             return {
                 code: 201,
                 metadata: {

@@ -5,11 +5,13 @@ const { CREATED, SuccessResponse } = require("../core/success.response");
 
 class AccessController {
     login = async (req, res, next) => {
+        console.log("call login api");
         new SuccessResponse({
             metadata: await AccessService.login(req.body),
         }).send(res);
     };
     singUp = async (req, res, next) => {
+        console.log("call singUp api");
         new CREATED({
             message: "Register OK!",
             metadata: await AccessService.singUp(req.body),
@@ -19,13 +21,14 @@ class AccessController {
         }).send(res);
     };
     logout = async (req, res, next) => {
-        console.log(req.keyStore);
+        console.log("call logout api");
         new SuccessResponse({
             message: "logout successfully",
             metadata: await AccessService.Logout(req.keyStore),
         }).send(res);
     };
     handleRefreshToken = async (req, res, next) => {
+        console.log("call refreshToken api");
         new SuccessResponse({
             message: "get token successfully",
             metadata: await AccessService.handleRefreshToken(

@@ -19,13 +19,13 @@ const createTokenPair = async (payload, publicKey, privateKey) => {
             expiresIn: "7 days",
         });
         //
-        JWT.verify(accessToken, publicKey, (err, decode) => {
-            if (err) {
-                console.error(`error verifying::`, err);
-            } else {
-                console.log(`decode verification::`, decode);
-            }
-        });
+        // JWT.verify(accessToken, publicKey, (err, decode) => {
+        //     if (err) {
+        //         console.error(`error verifying::`, err);
+        //     } else {
+        //         console.log(`decode verification::`, decode);
+        //     }
+        // });
         //
         return { accessToken, refreshToken };
     } catch (error) {}
