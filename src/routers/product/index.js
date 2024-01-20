@@ -11,7 +11,10 @@ router.post(
     "/publish/:id",
     asynchandler(productController.publishProductByShop)
 );
-
+router.post(
+    "/un-publish/:id",
+    asynchandler(productController.unPublishProductByShop)
+);
 //query
 
 router.get("/draft/all", asynchandler(productController.getAllDraftFoShop));
@@ -20,5 +23,8 @@ router.get(
     "/publish/all",
     asynchandler(productController.getAllPublishForShop)
 );
-
+router.get(
+    "/un-publish/all",
+    asynchandler(productController.getAllUnPublishForShop)
+);
 module.exports = router;

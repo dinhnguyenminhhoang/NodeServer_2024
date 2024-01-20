@@ -23,6 +23,15 @@ class ProductController {
             }),
         }).send(res);
     };
+    unPublishProductByShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "unPublish Product successfully",
+            metadata: await ProductSerrviceV2.unPublishProductByShop({
+                product_id: req.params.id,
+                product_shop: req.user.userId,
+            }),
+        }).send(res);
+    };
     // query
 
     /**
@@ -43,6 +52,14 @@ class ProductController {
         new SuccessResponse({
             message: "get list publish successfully",
             metadata: await ProductSerrviceV2.findAllPublishForShop({
+                product_shop: req.user.userId,
+            }),
+        }).send(res);
+    };
+    getAllUnPublishForShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "get list unPublish successfully",
+            metadata: await ProductSerrviceV2.findAllUnPublishForShop({
                 product_shop: req.user.userId,
             }),
         }).send(res);

@@ -11,6 +11,8 @@ const {
     findAllDraftForShop,
     publishProductByShop,
     findAllPublishForShop,
+    unPublishProductByShop,
+    findAllUnPublishForShop,
 } = require("../models/repositories/product.repo");
 
 //define factory to create product
@@ -34,6 +36,9 @@ class productMatchingFactoryAndStrategy {
     static async publishProductByShop({ product_shop, product_id }) {
         return await publishProductByShop({ product_id, product_shop });
     }
+    static async unPublishProductByShop({ product_shop, product_id }) {
+        return await unPublishProductByShop({ product_id, product_shop });
+    }
     // end put
     // query
     static async findAllDraftForShop({ product_shop, limit = 50, skip = 0 }) {
@@ -43,6 +48,14 @@ class productMatchingFactoryAndStrategy {
     static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
         const query = { product_shop, isPublished: true };
         return await findAllPublishForShop({ query, limit, skip });
+    }
+    static async findAllUnPublishForShop({
+        product_shop,
+        limit = 50,
+        skip = 0,
+    }) {
+        const query = { product_shop, isPublished: false };
+        return await findAllUnPublishForShop({ query, limit, skip });
     }
     // end query
 }
