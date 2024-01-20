@@ -14,6 +14,15 @@ class ProductController {
             ),
         }).send(res);
     };
+    publishProductByShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "publish Product successfully",
+            metadata: await ProductSerrviceV2.publishProductByShop({
+                product_id: req.params.id,
+                product_shop: req.user.userId,
+            }),
+        }).send(res);
+    };
     // query
 
     /**
@@ -30,6 +39,14 @@ class ProductController {
             }),
         }).send(res);
     };
-    //
+    getAllPublishForShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "get list publish successfully",
+            metadata: await ProductSerrviceV2.findAllPublishForShop({
+                product_shop: req.user.userId,
+            }),
+        }).send(res);
+    };
+    //end query
 }
 module.exports = new ProductController();
