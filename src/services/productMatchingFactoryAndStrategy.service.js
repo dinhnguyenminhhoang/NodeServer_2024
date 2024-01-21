@@ -14,6 +14,7 @@ const {
     unPublishProductByShop,
     findAllUnPublishForShop,
     searchProductByUser,
+    findAllProducts,
 } = require("../models/repositories/product.repo");
 
 //define factory to create product
@@ -32,6 +33,9 @@ class productMatchingFactoryAndStrategy {
             productMatchingFactoryAndStrategy.productRegistry[type];
         if (!productClass) throw new badRequestError("Invalid type:::", type);
         return new productClass(payload).createProduct();
+    }
+    async updateProduct(productId) {
+        return await product.create({ ...this, _id: productId });
     }
     //Put
     static async publishProductByShop({ product_shop, product_id }) {
@@ -60,9 +64,26 @@ class productMatchingFactoryAndStrategy {
     }
 
     static async getListSearchProduct({ keySearch }) {
-        console.log("keySearch", keySearch);
         return await searchProductByUser({ keySearch });
     }
+    static async findAllProducts({
+        limit = 50,
+        sort = "ctime",
+        page = 1,
+        filter = { isPublished: true },
+    }) {
+        return await findAllProducts({
+            limit,
+            sort,
+            page,
+            filter,
+            select: ["product_name", "product_price", "product_thumb"],
+        });
+    }
+    async findProduct(productId) {
+        return await product.create({ ...this, _id: productId });
+    }
+
     // end query
 }
 

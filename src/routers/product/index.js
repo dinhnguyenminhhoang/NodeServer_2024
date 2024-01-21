@@ -8,6 +8,8 @@ router.get(
     "/search/:keySearch",
     asynchandler(productController.getListSearchProduct)
 );
+router.get("", asynchandler(productController.findAllProducts));
+
 // create product
 router.use(authenticationV2);
 router.post("", asynchandler(productController.createProduct));
