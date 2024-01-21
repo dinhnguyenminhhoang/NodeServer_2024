@@ -13,6 +13,7 @@ const {
     findAllPublishForShop,
     unPublishProductByShop,
     findAllUnPublishForShop,
+    searchProductByUser,
 } = require("../models/repositories/product.repo");
 
 //define factory to create product
@@ -56,6 +57,11 @@ class productMatchingFactoryAndStrategy {
     }) {
         const query = { product_shop, isPublished: false };
         return await findAllUnPublishForShop({ query, limit, skip });
+    }
+
+    static async getListSearchProduct({ keySearch }) {
+        console.log("keySearch", keySearch);
+        return await searchProductByUser({ keySearch });
     }
     // end query
 }
