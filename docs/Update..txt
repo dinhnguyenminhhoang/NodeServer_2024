@@ -1,0 +1,7 @@
+//POST
+ - 
+//PUT
+ - Update tất cả các phần tử -> update không thành công -> tạo mới
+//PATCH
+ - Update 1 số thành phần mà vẩn dữ nguyên các thành phần khác
+ -> tích kiệm băng thông cho server
