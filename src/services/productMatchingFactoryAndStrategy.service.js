@@ -15,6 +15,7 @@ const {
     findAllUnPublishForShop,
     searchProductByUser,
     findAllProducts,
+    findProduct,
 } = require("../models/repositories/product.repo");
 
 //define factory to create product
@@ -80,8 +81,8 @@ class productMatchingFactoryAndStrategy {
             select: ["product_name", "product_price", "product_thumb"],
         });
     }
-    async findProduct(productId) {
-        return await product.create({ ...this, _id: productId });
+    static async findProduct({ product_id }) {
+        return await findProduct({ product_id, unSelect: ["__v"] });
     }
 
     // end query

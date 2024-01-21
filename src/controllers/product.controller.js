@@ -32,6 +32,15 @@ class ProductController {
             }),
         }).send(res);
     };
+    findProduct = async (req, res, next) => {
+        console.log("call api find product", req.params.product_id);
+        new SuccessResponse({
+            message: "find product successfully",
+            metadata: await ProductSerrviceV2.findProduct({
+                product_id: req.params.product_id,
+            }),
+        }).send(res);
+    };
     // query
 
     /**
@@ -76,6 +85,7 @@ class ProductController {
             metadata: await ProductSerrviceV2.findAllProducts(req.query),
         }).send(res);
     };
+
     //end query
 }
 module.exports = new ProductController();

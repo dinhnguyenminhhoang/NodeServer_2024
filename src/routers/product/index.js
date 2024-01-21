@@ -9,6 +9,7 @@ router.get(
     asynchandler(productController.getListSearchProduct)
 );
 router.get("", asynchandler(productController.findAllProducts));
+router.get("/:product_id", asynchandler(productController.findProduct));
 
 // create product
 router.use(authenticationV2);

@@ -8,7 +8,7 @@ const {
     furniture,
 } = require("../../models/product.model");
 const { Types } = require("mongoose");
-const { getSelectData } = require("../../utils");
+const { getSelectData, unGetSelectData } = require("../../utils");
 
 const findAllDraftForShop = async ({ query, limit, skip }) => {
     return queryProduct({ query, limit, skip });
@@ -69,6 +69,12 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
         .lean();
     return products;
 };
+const findProduct = async ({ product_id, unSelect }) => {
+    return await product
+        .findById(product_id)
+        .select(unGetSelectData(unSelect))
+        .lean();
+};
 const queryProduct = async ({ query, limit, skip }) =>
     await product
         .find(query)
@@ -85,4 +91,5 @@ module.exports = {
     findAllUnPublishForShop,
     searchProductByUser,
     findAllProducts,
+    findProduct,
 };
