@@ -1,5 +1,6 @@
 "use strict";
 const _ = require("lodash");
+const { Types } = require("mongoose");
 const getInfoData = ({ fill = [], object = {} }) => {
     return _.pick(object, fill);
 };
@@ -34,10 +35,12 @@ const updateNestedObjectParser = (obj) => {
 
     return final;
 };
+const covertObjectIdMoongoDb = (id) => Types.ObjectId(id);
 module.exports = {
     getInfoData,
     getSelectData,
     unGetSelectData,
     removeUndefinedObject,
     updateNestedObjectParser,
+    covertObjectIdMoongoDb,
 };
