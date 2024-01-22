@@ -17,7 +17,7 @@ const inventorySchema = new Schema(
         },
         inven_stock: {
             type: Number,
-            require: true,
+            required: true,
         },
         invent_shopId: {
             type: Schema.Types.ObjectId,
