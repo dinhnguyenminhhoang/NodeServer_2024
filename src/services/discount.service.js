@@ -1,5 +1,8 @@
 const { badRequestError, NotFoundError } = require("../core/error.response");
 const { discount } = require("../models/discount.model");
+const {
+    findAllDiscountCodeUnSelect,
+} = require("../models/repositories/discount.repo");
 const { findAllProducts } = require("../models/repositories/product.repo");
 const { covertObjectIdMoongoDb } = require("../utils");
 
@@ -151,4 +154,21 @@ class DiscountService {
         }
         return products;
     }
+    static async getAllDiscountCodesByShop({ limit, page, shopId }) {
+        const discounts = await findAllDiscountCodeUnSelect({
+            filter: {
+                discount_shopId: covertObjectIdMoongoDb(shopId),
+                discount_is_active: true,
+            },
+            model: discount,
+            sort: "ctime",
+            unSelect: ["__v", "discount_shopId"],
+            limit: +limit,
+            page: +page,
+        });
+        return discounts;
+    }
 }
+module.exports = {
+    DiscountService,
+};
