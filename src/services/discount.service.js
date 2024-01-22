@@ -1,5 +1,6 @@
-const { badRequestError } = require("../core/error.response");
+const { badRequestError, NotFoundError } = require("../core/error.response");
 const { discount } = require("../models/discount.model");
+const { findAllProducts } = require("../models/repositories/product.repo");
 const { covertObjectIdMoongoDb } = require("../utils");
 
 const armDiscount = {};
@@ -32,10 +33,12 @@ class DiscountService {
             throw new badRequestError(
                 "start date must be before end date code has expired"
             );
-        const foundDiscount = await discount.findOne({
-            discount_code: code,
-            discount_shopId: covertObjectIdMoongoDb(shopId),
-        });
+        const foundDiscount = await discount
+            .findOne({
+                discount_code: code,
+                discount_shopId: covertObjectIdMoongoDb(shopId),
+            })
+            .lean();
         if (foundDiscount && foundDiscount.discount_is_active)
             throw new badRequestError("discunt exists");
         const newDiscount = await discount.create({
@@ -104,5 +107,48 @@ class DiscountService {
                 new: isNew,
             }
         );
+    }
+    static async getAllDiscountCodeWithProduct({
+        code,
+        shopId,
+        userId,
+        page,
+        limit,
+    }) {
+        const foundDiscount = await discount
+            .findOne({
+                discount_code: code,
+                discount_shopId: covertObjectIdMoongoDb(shopId),
+            })
+            .lean();
+        if (!foundDiscount || !foundDiscount.discount_is_active)
+            throw new NotFoundError("discount not found");
+        const { discount_applies_to, discount_product_ids } = foundDiscount;
+        let products = [];
+        if (discount_applies_to === "all") {
+            products = await findAllProducts({
+                filter: {
+                    product_shop: covertObjectIdMoongoDb(shopId),
+                    isPublished: true,
+                },
+                limit: +limit,
+                page: +page,
+                sort: "ctime",
+                select: ["product_name"],
+            });
+        }
+        if (discount_applies_to === "specific") {
+            products = await findAllProducts({
+                filter: {
+                    product_shop: { $in: discount_product_ids },
+                    isPublished: true,
+                },
+                limit: +limit,
+                page: +page,
+                sort: "ctime",
+                select: ["product_name"],
+            });
+        }
+        return products;
     }
 }
