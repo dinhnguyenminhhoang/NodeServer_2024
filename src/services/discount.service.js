@@ -7,7 +7,6 @@ const {
 const { findAllProducts } = require("../models/repositories/product.repo");
 const { covertObjectIdMoongoDb } = require("../utils");
 
-const armDiscount = {};
 class DiscountService {
     static async createDiscountCode(payload) {
         const {
@@ -29,22 +28,22 @@ class DiscountService {
             max_uses_per_user,
             users_used,
         } = payload;
-        const newDate = new Date();
-        if (newDate < Date(start_date) || newDate > new Date(end_date)) {
+        if (new Date() < Date(start_date) || new Date() > new Date(end_date)) {
             throw new badRequestError("discount code has expired");
         }
         if (new Date(start_date) > new Date(end_date))
             throw new badRequestError(
                 "start date must be before end date code has expired"
             );
+
         const foundDiscount = await discount
             .findOne({
                 discount_code: code,
                 discount_shopId: covertObjectIdMoongoDb(shopId),
             })
             .lean();
-        if (foundDiscount && foundDiscount.discount_is_active)
-            throw new badRequestError("discunt exists");
+        if (foundDiscount) throw new badRequestError("discount exists");
+
         const newDiscount = await discount.create({
             discount_name: name,
             disocunt_description: description,
@@ -61,7 +60,7 @@ class DiscountService {
             discount_shopId: shopId,
             discount_is_active: is_active,
             discount_applies_to: applies_to,
-            discount_product_ids: product_ids,
+            discount_product_ids: applies_to === "all" ? [] : product_ids,
             discount_max_value: max_value,
         });
         return newDiscount;
@@ -115,9 +114,8 @@ class DiscountService {
     static async getAllDiscountCodeWithProduct({
         code,
         shopId,
-        userId,
-        page,
-        limit,
+        page = 1,
+        limit = 50,
     }) {
         const foundDiscount = await discount
             .findOne({
@@ -125,8 +123,7 @@ class DiscountService {
                 discount_shopId: covertObjectIdMoongoDb(shopId),
             })
             .lean();
-        if (!foundDiscount || !foundDiscount.discount_is_active)
-            throw new NotFoundError("discount not found");
+        if (!foundDiscount) throw new NotFoundError("discount not found");
         const { discount_applies_to, discount_product_ids } = foundDiscount;
         let products = [];
         if (discount_applies_to === "all") {
@@ -144,7 +141,7 @@ class DiscountService {
         if (discount_applies_to === "specific") {
             products = await findAllProducts({
                 filter: {
-                    product_shop: { $in: discount_product_ids },
+                    _id: { $in: discount_product_ids },
                     isPublished: true,
                 },
                 limit: +limit,
@@ -176,6 +173,7 @@ class DiscountService {
             discount_shopId: shopId,
         });
         if (!foundDiscount) throw new NotFoundError("discount not found");
+        console.log("pass 1");
         const {
             discount_is_active,
             discount_max_uses,
@@ -190,18 +188,19 @@ class DiscountService {
         if (!discount_is_active) throw new badRequestError("discount expired");
         if (discount_max_uses === 0)
             throw new NotFoundError("discount are out");
-        if (
-            new Date() < new Date(discount_start_date) ||
-            new Date() > new Date(discount_end_date)
-        ) {
-            throw new NotFoundError("discount are out");
-        }
+        // if (
+        //     new Date() < new Date(discount_start_date) ||
+        //     new Date() > new Date(discount_end_date)
+        // ) {
+        //     throw new NotFoundError("discount are out");
+        // }
         let totalOrder = 0;
         if (discount_min_order_value > 0) {
             // get total
             totalOrder = products.reduce((acc, product) => {
                 return acc + product.quantity * product.price;
-            });
+            }, 0);
+            console.log("Total order: " + totalOrder, discount_min_order_value);
             if (totalOrder < discount_min_order_value) {
                 throw new NotFoundError(
                     "discount requires a minium order value"

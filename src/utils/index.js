@@ -35,7 +35,7 @@ const updateNestedObjectParser = (obj) => {
 
     return final;
 };
-const covertObjectIdMoongoDb = (id) => Types.ObjectId(id);
+const covertObjectIdMoongoDb = (id) => new Types.ObjectId(id);
 module.exports = {
     getInfoData,
     getSelectData,
