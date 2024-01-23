@@ -1,4 +1,8 @@
-const { unGetSelectData, getSelectData } = require("../../utils");
+const {
+    unGetSelectData,
+    getSelectData,
+    covertObjectIdMoongoDb,
+} = require("../../utils");
 
 const findAllDiscountCodeUnSelect = async ({
     limit = 50,
@@ -38,7 +42,11 @@ const findAllDiscountCodeSelect = async ({
         .lean();
     return document;
 };
+const checkDiscountExists = async ({ model, filter }) => {
+    return await model.findOne(filter).lean();
+};
 module.exports = {
     findAllDiscountCodeUnSelect,
     findAllDiscountCodeSelect,
+    checkDiscountExists,
 };
