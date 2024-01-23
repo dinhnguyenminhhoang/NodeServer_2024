@@ -226,6 +226,13 @@ class DiscountService {
             totalPrice: totalOrder - amount,
         };
     }
+    static async deleteDiscountCode({ shopId, codeId }) {
+        const deleted = await discount.findByIdAndDelete({
+            discount_code: codeId,
+            discount_shopId: covertObjectIdMoongoDb(shopId),
+        });
+        return deleted;
+    }
 }
 module.exports = {
     DiscountService,
