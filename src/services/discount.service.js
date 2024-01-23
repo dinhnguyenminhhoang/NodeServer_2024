@@ -233,6 +233,30 @@ class DiscountService {
         });
         return deleted;
     }
+    //user cancel
+    static async cancelDiscountCode({ codeId, shopId, userId }) {
+        const foundDiscount = await checkDiscountExists({
+            model: discount,
+            filter: {
+                discount_code: codeId,
+                discount_shopId: shopId,
+            },
+        });
+        if (!foundDiscount) throw new NotFoundError("discount not found");
+        const result = await discount.findByIdAndUpdate(
+            {
+                _id: foundDiscount._id,
+            },
+            {
+                $pull: { discount_users_used: userId },
+                $inc: {
+                    discount_max_uses: 1,
+                    discount_uses_count: -1,
+                },
+            }
+        );
+        return result;
+    }
 }
 module.exports = {
     DiscountService,
