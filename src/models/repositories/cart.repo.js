@@ -38,23 +38,8 @@ const updateUserCartQuantity = async ({ userId, product }) => {
         option,
     });
 };
-const deleteUserCart = async ({ userId, productId }) => {
-    const query = {
-            cart_userId: userId,
-            cart_state: "active",
-        },
-        updateSet = {
-            $pull: {
-                cart_products: {
-                    productId,
-                },
-            },
-        };
-    const deleteCart = await cart.updateOne(query, updateSet);
-};
 
 module.exports = {
     createUserCart,
     updateUserCartQuantity,
-    deleteUserCart,
 };

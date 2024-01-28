@@ -25,6 +25,20 @@ class CartService {
         });
         //nếu đã có sản phẩm
     }
+    static deleteUserCart = async ({ userId, productId }) => {
+        const query = {
+                cart_userId: userId,
+                cart_state: "active",
+            },
+            updateSet = {
+                $pull: {
+                    cart_products: {
+                        productId,
+                    },
+                },
+            };
+        const deleteCart = await cart.updateOne(query, updateSet);
+    };
     static async addToCartV2({ userId, product = {} }) {
         const { productId, quantity, old_quantity } =
             shop_order_ids[0]?.item_products[0];
@@ -34,7 +48,10 @@ class CartService {
         if (foundProduct.product_shop.toString() !== shop_order_ids[0]?.shopId)
             throw new NotFoundError("product not found");
         if (quantity === 0) {
-            await deleteUserCart({ productId: productId, userId: userId });
+            await CartService.deleteUserCart({
+                productId: productId,
+                userId: userId,
+            });
         }
         return await updateUserCartQuantity({
             product: {
