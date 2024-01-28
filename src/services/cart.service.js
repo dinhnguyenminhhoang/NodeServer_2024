@@ -1,22 +1,22 @@
 const { NotFoundError } = require("../core/error.response");
 const { cart } = require("../models/cart.model");
-const {
-    createUserCart,
-    updateUserCartQuantity,
-    deleteUserCart,
-} = require("../models/repositories/cart.repo");
+const { updateUserCartQuantity } = require("../models/repositories/cart.repo");
 const { getProductById } = require("../models/repositories/product.repo");
 
 class CartService {
     static async addToCart({ userId, product = {} }) {
-        const userCart = await cart.findOne({ cart_userId: userId }).lean();
+        const userCart = await cart.findOne({ cart_userId: +userId });
         if (!userCart) {
-            return await createUserCart({ product: product, userId: userId });
+            return await CartService.createUserCart({
+                product: product,
+                userId: userId,
+            });
         }
         // trường hợp có giỏ hàng nhưng ko có sản phẩm
         if (!userCart.cart_products.length) {
             //update
             userCart.cart_products = [product];
+            userCart.cart_count_product = 0;
             return await userCart.save();
         }
         return await updateUserCartQuantity({
@@ -25,7 +25,22 @@ class CartService {
         });
         //nếu đã có sản phẩm
     }
-    static deleteUserCart = async ({ userId, productId }) => {
+
+    static createUserCart = async ({ userId, product }) => {
+        const query = {
+                cart_userId: +userId,
+                cart_state: "active",
+            },
+            updateOrInsert = {
+                $addToSet: { cart_products: product },
+            },
+            options = {
+                upsert: true,
+                new: true,
+            };
+        return await cart.findOneAndUpdate(query, updateOrInsert, options);
+    };
+    static deleteCartItem = async ({ userId, productId }) => {
         const query = {
                 cart_userId: userId,
                 cart_state: "active",
@@ -38,17 +53,19 @@ class CartService {
                 },
             };
         const deleteCart = await cart.updateOne(query, updateSet);
+        return deleteCart;
     };
-    static async addToCartV2({ userId, product = {} }) {
+    static async addToCartV2({ shop_order_ids, userId }) {
         const { productId, quantity, old_quantity } =
-            shop_order_ids[0]?.item_products[0];
+            shop_order_ids[0]?.items_products[0];
         // check product found
         const foundProduct = await getProductById(productId);
-        if (foundProduct) throw new NotFoundError("product not found");
+        console;
+        if (!foundProduct) throw new NotFoundError("product not found");
         if (foundProduct.product_shop.toString() !== shop_order_ids[0]?.shopId)
             throw new NotFoundError("product not found");
         if (quantity === 0) {
-            await CartService.deleteUserCart({
+            await CartService.deleteCartItem({
                 productId: productId,
                 userId: userId,
             });

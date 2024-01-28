@@ -4,6 +4,8 @@ const { apiKey, permission } = require("../auth/checkAuth");
 const router = express.Router();
 // check api key
 router.use(apiKey);
+router.use(`/v1/api/cart`, require("./cart"));
+
 // check permissions
 router.use(permission("0000"));
 
