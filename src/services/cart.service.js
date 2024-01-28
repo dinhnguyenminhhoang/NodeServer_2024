@@ -1,8 +1,11 @@
+const { NotFoundError } = require("../core/error.response");
 const { cart } = require("../models/cart.model");
 const {
     createUserCart,
     updateUserCartQuantity,
+    deleteUserCart,
 } = require("../models/repositories/cart.repo");
+const { getProductById } = require("../models/repositories/product.repo");
 
 class CartService {
     static async addToCart({ userId, product = {} }) {
@@ -22,5 +25,31 @@ class CartService {
         });
         //nếu đã có sản phẩm
     }
+    static async addToCartV2({ userId, product = {} }) {
+        const { productId, quantity, old_quantity } =
+            shop_order_ids[0]?.item_products[0];
+        // check product found
+        const foundProduct = await getProductById(productId);
+        if (foundProduct) throw new NotFoundError("product not found");
+        if (foundProduct.product_shop.toString() !== shop_order_ids[0]?.shopId)
+            throw new NotFoundError("product not found");
+        if (quantity === 0) {
+            await deleteUserCart({ productId: productId, userId: userId });
+        }
+        return await updateUserCartQuantity({
+            product: {
+                productId,
+                quantity: quantity - old_quantity,
+            },
+            userId: userId,
+        });
+    }
+    static getListUserCart = async ({ userId }) => {
+        return await cart
+            .findOne({
+                cart_userId: +userId,
+            })
+            .lean();
+    };
 }
 module.exports = CartService;

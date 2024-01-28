@@ -8,7 +8,11 @@ const {
     furniture,
 } = require("../../models/product.model");
 const { Types } = require("mongoose");
-const { getSelectData, unGetSelectData } = require("../../utils");
+const {
+    getSelectData,
+    unGetSelectData,
+    covertObjectIdMoongoDb,
+} = require("../../utils");
 
 const findAllDraftForShop = async ({ query, limit, skip }) => {
     return queryProduct({ query, limit, skip });
@@ -85,6 +89,11 @@ const updateProductById = async ({
         new: isNew,
     });
 };
+const getProductById = async (productId) => {
+    return await product
+        .findOne({ _id: covertObjectIdMoongoDb(productId) })
+        .lean();
+};
 const queryProduct = async ({ query, limit, skip }) =>
     await product
         .find(query)
@@ -103,4 +112,5 @@ module.exports = {
     findAllProducts,
     findProduct,
     updateProductById,
+    getProductById,
 };
