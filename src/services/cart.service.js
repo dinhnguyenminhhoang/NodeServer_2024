@@ -1,7 +1,7 @@
 const { NotFoundError } = require("../core/error.response");
 const { cart } = require("../models/cart.model");
-const { updateUserCartQuantity } = require("../models/repositories/cart.repo");
 const { getProductById } = require("../models/repositories/product.repo");
+const { covertObjectIdMoongoDb } = require("../utils");
 
 class CartService {
     static async addToCart({ userId, product = {} }) {
@@ -40,6 +40,25 @@ class CartService {
             };
         return await cart.findOneAndUpdate(query, updateOrInsert, options);
     };
+    static updateUserCartQuantity = async ({ userId, product }) => {
+        const { productId, quantity } = product;
+        const query = {
+            cart_userId: userId,
+            "cart_products.productId": productId,
+            cart_state: "active",
+        };
+
+        const updateSet = {
+            $inc: { "cart_products.$.quantity": quantity },
+        };
+
+        const options = {
+            upsert: true,
+            new: true,
+        };
+
+        return await cart.findByIdAndUpdate(query, updateSet, options);
+    };
     static deleteCartItem = async ({ userId, productId }) => {
         const query = {
                 cart_userId: userId,
@@ -60,17 +79,16 @@ class CartService {
             shop_order_ids[0]?.items_products[0];
         // check product found
         const foundProduct = await getProductById(productId);
-        console;
         if (!foundProduct) throw new NotFoundError("product not found");
         if (foundProduct.product_shop.toString() !== shop_order_ids[0]?.shopId)
             throw new NotFoundError("product not found");
         if (quantity === 0) {
-            await CartService.deleteCartItem({
+            return await CartService.deleteCartItem({
                 productId: productId,
                 userId: userId,
             });
         }
-        return await updateUserCartQuantity({
+        return await CartService.updateUserCartQuantity({
             product: {
                 productId,
                 quantity: quantity - old_quantity,
