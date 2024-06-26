@@ -21,10 +21,9 @@ class AccessController {
         }).send(res);
     };
     logout = async (req, res, next) => {
-        console.log("call logout api");
         new SuccessResponse({
             message: "logout successfully",
-            metadata: await AccessService.Logout(req.keyStore),
+            metadata: await AccessService.Logout({ keyStore: req.keyStore }),
         }).send(res);
     };
     handleRefreshToken = async (req, res, next) => {
